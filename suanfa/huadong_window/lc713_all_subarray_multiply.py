@@ -17,6 +17,20 @@ premium lock icon
 输入：nums = [1,2,3], k = 0
 输出：0
 """
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def numSubarrayProductLessThanK(nums, k):
     if k <= 1:
         return 0

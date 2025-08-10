@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # 原有 Zookeeper 服务
+  zookeeper:
+    image: bitnami/zookeeper:3.9
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    volumes:
+      - zookeeper_data:/bitnami/zookeeper
+
+  # 修改后的 Kafka 服务（添加 JMX 导出器）
+  kafka:
+    image: bitnami/kafka:3.7
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "9404:9404"  # JMX Exporter 端口
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
+      # 启用 JMX 并配置 Exporter
+      - KAFKA_ENABLE_JMX_EXPORTER=yes
+      - JMX_EXPORTER_PORT=9404
+      - KAFKA_OPTS=-javaagent:/opt/bitnami/kafka/jmx_prometheus_javaagent.jar=9404:/opt/bitnami/kafka/config/jmx_exporter.yml
+    volumes:
+      - kafka_data:/bitnami/kafka
+      # 挂载 JMX Exporter 配置文件
+      - ./jmx_exporter.yml:/opt/bitnami/kafka/config/jmx_exporter.yml
+      # 挂载 JMX Agent JAR 文件（从容器内复制）
+    depends_on:
+      - zookeeper
+
+  # Prometheus 服务
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    depends_on:
+      - kafka
+
+  # Grafana 服务
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana-dashboards:/etc/grafana/provisioning/dashboards
+    depends_on:
+      - prometheus
+
+volumes:
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
