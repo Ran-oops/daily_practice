@@ -7,6 +7,13 @@
 1≤∣str1∣,∣str2∣≤5000
 要求： 空间复杂度 O(n^2)
 """
+
+"""动态规划逻辑
+dp[i][j] = dp[i-1][j-1] + 1
+if dp[i][j] > max_len:
+    max_len = dp[i][j]
+    end_pos = i-1
+"""
 def LCS1(str1, str2):
     """
     时间复杂度较高， 有一个用例因为超时而没有通过

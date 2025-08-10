@@ -45,35 +45,37 @@ DP表：
 def LCS(str1, str2):
     m, n = len(str1), len(str2)
     # 创建(m+1)x(n+1)的DP表
-    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    dp = [[0] * (n+1) for _ in range(m+1)]
 
-    # 填充DP表
-    for i in range(1, m + 1):
-        for j in range(1, n + 1):
-            if str1[i - 1] == str2[j - 1]:
-                dp[i][j] = dp[i - 1][j - 1] + 1
+    for i in range(1, m+1):
+        for j in range(1, n+1):
+            if str1[i-1] == str2[j-1]:
+                dp[i][j] = dp[i-1][j-1] + 1
             else:
-                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+                dp[i][j] = max(dp[i-1][j], dp[i][j-1])
 
-    # 检查是否存在LCS
+    print(dp)
     if dp[m][n] == 0:
-        return "-1"
+        return -1
 
-    # 回溯构建LCS
     i, j = m, n
-    lcs_chars = []
-    while i > 0 and j > 0:
-        if str1[i - 1] == str2[j - 1]:
-            lcs_chars.append(str1[i - 1])
+    results = []
+    while i>0 and j>0:
+        if str1[i-1] ==  str2[j-1]:
+            results.append(str1[i-1])
             i -= 1
             j -= 1
-        elif dp[i - 1][j] >= dp[i][j - 1]:
-            i -= 1
         else:
-            j -= 1
+            if dp[i-1][j] > dp[i][j-1]:
+                i-=1
+            else:
+                j-=1
 
-    # 反转得到正确顺序的LCS
-    return ''.join(lcs_chars[::-1])
+    print(f"results: {results}")
+    results.reverse()
+    return "".join(results)
+
+
 
 
 # 测试示例
