@@ -1,0 +1,112 @@
+有三个df,分别叫做ori_table_df, lh_df，after_table_df； 它们都有相同的列名（mkf, xing,lh_class, is_reduced），请写一个可执行的代码示例，按顺序实现以下操作:
+1. 对lh_df进行操作：将lh_df中存在的和ori_table_df中一模一样的行找出来，并从lh_df中去除
+2.对lh_df进行操作：将lh_df中存在的满足(lh_df.mkf==ori_table_df.mkf) &(lh_df.xing != ori_table_df.xing)的行找出来，并从lh_df中去除
+3.对lh_df进行操作：将lh_df中存在的满足(lh_df.mkf !=ori_table_df.mkf) &(lh_df.xing == ori_table_df.xing)的行找出来，并从lh_df中去除
+4.对ori_table_df进行操作：将ori_table_df中存在的满足(lh_df.mkf ==ori_table_df.mkf) &(lh_df.xing == ori_table_df.xing)的行找出来，并从ori_table_df中去除
+5. 最终将处理结束之后的ori_table_df和lh_df concat起来
+
+
+import pandas as pd
+
+# 创建DataFrame
+data = {
+    'mkf': ['A', 'B', 'C', 'D', 'E'],
+    'xing': ['W', 'X', 'Y', 'Z', 'V'],
+    'lh_class': ['class1', 'class2', 'class3', 'class4', 'class5'],
+    'is_reduced': [True, False, True, False, True]
+}
+
+ori_table_df = pd.DataFrame(data)
+lh_df = pd.DataFrame(data)
+
+# 重置索引以便进行比较
+ori_table_df.reset_index(drop=True, inplace=True)
+lh_df.reset_index(drop=True, inplace=True)
+
+# 1. 对lh_df进行操作：将lh_df中存在的和ori_table_df中一模一样的行找出来，并从lh_df中去除
+lh_df = lh_df[~lh_df.isin(ori_table_df).all(1)]
+
+# 2. 对lh_df进行操作：将lh_df中存在的满足(lh_df.mkf==ori_table_df.mkf) &(lh_df.xing != ori_table_df.xing)的行找出来，并从lh_df中去除
+for index, row in ori_table_df.iterrows():
+    lh_df = lh_df[~((lh_df['mkf'] == row['mkf']) & (lh_df['xing'] != row['xing']))]
+
+# 3. 对lh_df进行操作：将lh_df中存在的满足(lh_df.mkf !=ori_table_df.mkf) &(lh_df.xing == ori_table_df.xing)的行找出来，并从lh_df中去除
+for index, row in ori_table_df.iterrows():
+    lh_df = lh_df[~((lh_df['mkf'] != row['mkf']) & (lh_df['xing'] == row['xing']))]
+
+# 4. 对ori_table_df进行操作：将ori_table_df中存在的满足(lh_df.mkf ==ori_table_df.mkf) &(lh_df.xing == ori_table_df.xing)的行找出来，并从ori_table_df中去除
+for index, row in lh_df.iterrows():
+    ori_table_df = ori_table_df[~((ori_table_df['mkf'] == row['mkf']) & (ori_table_df['xing'] == row['xing']))]
+
+# 5. 最终将处理结束之后的ori_table_df和lh_df concat起来
+final_df = pd.concat([ori_table_df, lh_df], ignore_index=True)
+
+print(final_df)
+
+
+docker run --name my-redis -p 6379:6379 -d -e REDIS_ARGS="--requirepass Yan12345 --user root on >Yan12345 ~* allcommands" redis
+
+==================================================================================
+
+MERGE INTO (SELECT * FROM table1 WHERE VALID_TO= '01 -JAN-5000'
+AND MKF_KEY LIKE 'BCSP.%' AND XING_KEY like 'SingleNamecreditcurves%*) main
+USING table2 gtt
+on (main.NKF_KEY=gtt.NKF_KEY AND substr(main.XING_KEY, 1, instr(main.XING_KEY, '^', 1, 2))=substr(gtt.XING_KEY,
+1, instr(gtt.XING_KEY, '^', 1, 2)))
+WHEN MATCHED THEN
+UPDATE SET main.VALID_TO = CASE WHEN main.valid_to='01-JAN- 5000' AND main.MKF_ID = gtt.MKF_ID and main.XING_KEY
+=gtt.XING_KEY
+and main.ASSET_CLASS ==gtt.ASSET_CLASS
+and main.LH_CLASS = gtt.LH_CLASS
+and main.IS_REDUCED = gtt.IS_REDUCED
+and main. IS NODELLABLE = gtt.IS MODELLABLE
+then main.VALID_TO ELSE to_date(:cobdate, 'WY-MM-DD HH24 :MI:SS*)
+END,
+main.UPDATE USER =CASE WHEN
+main.valid_to='01-JAN- 5000' AND main.MKF_ID = gtt.MKF_ID and main.XING_KEY
+=gtt.XING_KEY
+and main.ASSET_CLASS ==gtt.ASSET_CLASS
+and main.LH_CLASS = gtt.LH_CLASS
+and main.IS_REDUCED = gtt.IS_REDUCED
+and main. IS NODELLABLE = gtt.IS MODELLABLE
+THEN main.UPDATE USER ELSE "HOS XING KEY JOB* END
+
+===================================================================================
+一个python项目主要是复杂的sql语句查询出数据，然后对dataframe进行操作之后输出为CSV文件，怎么优化呢
+在优化这个python项目时，可以考虑以下几点:
+
+优化SQL语句:
+尽量使用索引来优化查询效率
+尽量使用JOIN操作来避免多次查询
+尽量使用批量操作来提高效率
+优化数据操作:
+使用pandas的优化函数(如groupby, pivot_table)来替代手写的循环
+尽量使用numba或Cython来加速循环
+尽量使用并行操作来提高效率(如并行apply)
+优化文件输出:
+使用pandas的to_csv函数来输出CSV文件
+使用分块(chunksize)参数来分批写入文件，提高写入效率
+希望以上建议能够帮助你优化你的python项目。
+
+===================================================================
+MERGE INTO
+    (SELECT * FROM table1
+        WHERE
+        VALID_TO= '01 -JAN-5000' AND MKF_KEY LIKE 'BCSP.%' AND XING_KEY like 'SingleNamecreditcurves%*) main
+    USING table2 gtt ON
+        (main.NKF_KEY=gtt.NKF_KEY AND substr(main.XING_KEY, 1, instr(main.XING_KEY, '^', 1, 2))=substr(gtt.XING_KEY,1, instr(gtt.XING_KEY, '^', 1, 2)))
+        WHEN MATCHED THEN UPDATE SET main.VALID_TO = CASE WHEN main.valid_to='01-JAN- 5000' AND main.MKF_ID = gtt.MKF_ID and main.XING_KEY=gtt.XING_KEY
+        and main.ASSET_CLASS ==gtt.ASSET_CLASSand main.LH_CLASS = gtt.LH_CLASSand main.IS_REDUCED = gtt.IS_REDUCEDand main. IS NODELLABLE = gtt.IS MODELLABLE
+        then main.VALID_TO ELSE to_date(:cobdate, 'WY-MM-DD HH24 :MI:SS*)END,main.UPDATE USER =CASE WHEN main.valid_to='01-JAN- 5000' AND main.MKF_ID = gtt.MKF_ID
+        and main.XING_KEY=gtt.XING_KEYand main.ASSET_CLASS ==gtt.ASSET_CLASSand main.LH_CLASS = gtt.LH_CLASSand main.IS_REDUCED = gtt.IS_REDUCED
+        and main. IS NODELLABLE = gtt.IS MODELLABLETHEN main.UPDATE USER ELSE "HOS XING KEY JOB* END
+
+
+
+
+
+
+
+
+
+

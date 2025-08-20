@@ -1,5 +1,5 @@
 
-sql = """
+sql = """1.
 select a.department_name, COALESCE(b.proj_num, 0) from department a left join
 (SELECT dept_id, count(*) as proj_num from project GROUP BY dept_id)b on a.id = b.dept_id
 """
@@ -7,12 +7,13 @@ select a.department_name, COALESCE(b.proj_num, 0) from department a left join
 ps:
 当部门没有项目时，proj_num 将显示为 NULL
 如需显示为 0，可改用：COALESCE(b.proj_num, 0)
+也可以是 ifnull(b.proj_num, 0)
 """
 
-"""错误
+"""2.1错误
 select a, b, count(c) FROM t group by a
 """
-"""正确
+"""2.2正确
 select a, b, count(c) FROM t group by a,b
 """
 

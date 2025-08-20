@@ -1,27 +1,25 @@
-import bisect
-def compute_list(arr):
-    res = [0] * len(arr)
-    tails = []
-    for i in range(len(arr)):
-        idx = bisect.bisect_left(tails, arr[i])
-        if idx == len(tails):
-            tails.append(arr[i])
-        else:
-            tails[idx] = arr[i]
-        res[i] = idx + 1
-    return res
+astr = "186 186 150 200 160 130 197 200"
+alist = list(map(int, astr.strip().split()))
+lens = len(alist)
+left_smaller, right_smaller = [1] * lens, [1] * lens
+for i in range(lens):
+    for j in range(i):
+        if alist[j] < alist[i]:
+            left_smaller[i] = max(left_smaller[j] + 1, left_smaller[i])
+
+for i in range(lens - 1, -1, -1):
+    for j in range(lens - 1, i, -1):
+        if alist[j] < alist[i]:
+            right_smaller[i] = max(right_smaller[j] + 1, right_smaller[i])
+
+new_alist = list(map(lambda a, b: a + b -1, left_smaller, right_smaller))
+max_num = max(new_alist)
+pick_num = lens - max_num
+print(pick_num)
 
 
-while True:
-    try:
-        lens = int(input())
-        alist = list(map(int, input().strip().split()))
 
-        left = compute_list(alist)
-        right = compute_list(alist[::-1])
-        right = right[::-1]
-        anew_list = map(lambda a, b:a+b-1, left, right)
-        print(lens - max(anew_list))
 
-    except:
-        break
+
+
+
