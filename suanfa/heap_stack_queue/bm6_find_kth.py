@@ -3,6 +3,9 @@ import bisect
 
 def findKth(a: List[int], n: int, K: int) -> int:
     # write code here
+    """思想：
+    基于冒泡排序的思想，不需要全都排好序再选取，而是使用for i in range(K)来确定K个元素的次序
+    """
     for i in range(K):
         swapped = False
         for j in range(n-i-1):
