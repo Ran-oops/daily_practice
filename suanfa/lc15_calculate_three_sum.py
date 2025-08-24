@@ -23,7 +23,7 @@ nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0 。
 
 """
 
-def threeSum(nums):
+def three_sum_zero(nums):
     ans = []
     nums.sort()
     print(nums)
@@ -58,7 +58,7 @@ def threeSum(nums):
     return ans
 
 
-print(threeSum([-1,0,1,2,-1,-4]))
+print(three_sum_zero([-1,0,1,2,-1,-4]))
 # print(threeSum([0,0,0]))
 
 """
